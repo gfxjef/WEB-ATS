@@ -1,0 +1,625 @@
+[
+    {
+        "code": "728782",
+        "date": "2024-07-16T05:42:21.933Z",
+        "items": [
+            {
+                "name": "Cielo",
+                "model": "Sin gas",
+                "size": "2.5 LT",
+                "sku": "7750670313537",
+                "quantity": 5,
+                "price": "17.50"
+            },
+            {
+                "name": "Cielo",
+                "model": "Sin gas",
+                "size": "7 LT",
+                "sku": "7750670000734",
+                "quantity": 3,
+                "price": "27.00"
+            },
+            {
+                "name": "Ballantines",
+                "model": "Finest",
+                "size": "1 LT",
+                "sku": "5010106111956",
+                "quantity": 1,
+                "price": "58.00"
+            },
+            {
+                "name": "Chivas real",
+                "model": "12 a\u00f1os",
+                "size": "750 ML",
+                "sku": "80432400395",
+                "quantity": 1,
+                "price": "90.00"
+            },
+            {
+                "name": "Chivas real",
+                "model": "12 a\u00f1os ",
+                "size": "750 ML",
+                "sku": "80432402931",
+                "quantity": 2,
+                "price": "180.00"
+            },
+            {
+                "name": "Chivas real",
+                "model": "13 a\u00f1os",
+                "size": "750 ML",
+                "sku": "5000299611104",
+                "quantity": 1,
+                "price": "100.00"
+            },
+            {
+                "name": "Cielo",
+                "model": "Sin gas",
+                "size": "625 ML",
+                "sku": "7750670244954",
+                "quantity": 2,
+                "price": "3.00"
+            }
+        ],
+        "totalPrice": "475.50",
+        "discount": "23.78",
+        "finalTotal": "451.73"
+    },
+    {
+        "code": "878770",
+        "date": "2024-07-16T05:45:27.715Z",
+        "items": [
+            {
+                "name": "Chivas real",
+                "model": "12 a\u00f1os",
+                "size": "750 ML",
+                "sku": "80432400395",
+                "quantity": 1,
+                "price": "90.00"
+            },
+            {
+                "name": "Chivas real",
+                "model": "13 a\u00f1os",
+                "size": "750 ML",
+                "sku": "5000299611104",
+                "quantity": 1,
+                "price": "100.00"
+            },
+            {
+                "name": "Ballantines",
+                "model": "Finest",
+                "size": "1 LT",
+                "sku": "5010106111956",
+                "quantity": 1,
+                "price": "58.00"
+            },
+            {
+                "name": "Ballantines",
+                "model": "Finest",
+                "size": "750 ML",
+                "sku": "5010106111451",
+                "quantity": 1,
+                "price": "46.00"
+            },
+            {
+                "name": "Johnnie Walker",
+                "model": "Black label",
+                "size": "750 ML",
+                "sku": "5000267024011",
+                "quantity": 1,
+                "price": "118.00"
+            },
+            {
+                "name": "Jack Daniel's",
+                "model": "Jennessee Honey",
+                "size": "750 ML",
+                "sku": "82184000335",
+                "quantity": 1,
+                "price": "95.00"
+            },
+            {
+                "name": "Jack Daniel's",
+                "model": "Jennessee Black ",
+                "size": "750 ML",
+                "sku": "82184090466",
+                "quantity": 1,
+                "price": "95.00"
+            },
+            {
+                "name": "Grants",
+                "model": "750 ML",
+                "size": "750 ML",
+                "sku": "5010327000046",
+                "quantity": 1,
+                "price": "35.00"
+            },
+            {
+                "name": "Grants",
+                "model": "-",
+                "size": "1 LT",
+                "sku": "WISGRA1LT",
+                "quantity": 1,
+                "price": "33.90"
+            },
+            {
+                "name": "Old Par",
+                "model": "12 a\u00f1os",
+                "size": "750 ML",
+                "sku": "5000281003160",
+                "quantity": 1,
+                "price": "90.00"
+            },
+            {
+                "name": "Johnnie Walker",
+                "model": "Red label",
+                "size": "750 ML",
+                "sku": "5000267014005",
+                "quantity": 1,
+                "price": "54.00"
+            }
+        ],
+        "totalPrice": "814.90",
+        "discount": "40.75",
+        "finalTotal": "774.15"
+    },
+    {
+        "code": "431773",
+        "date": "2024-07-16T05:59:30.739Z",
+        "items": [
+            {
+                "name": "Chivas real",
+                "model": "12 a\u00f1os",
+                "size": "750 ML",
+                "sku": "80432400395",
+                "quantity": 2,
+                "price": "180.00"
+            },
+            {
+                "name": "Chivas real",
+                "model": "13 a\u00f1os",
+                "size": "750 ML",
+                "sku": "5000299611104",
+                "quantity": 1,
+                "price": "100.00"
+            },
+            {
+                "name": "Ballantines",
+                "model": "Finest",
+                "size": "1 LT",
+                "sku": "5010106111956",
+                "quantity": 1,
+                "price": "58.00"
+            },
+            {
+                "name": "Jack Daniel's",
+                "model": "Jennessee Black ",
+                "size": "750 ML",
+                "sku": "82184090466",
+                "quantity": 1,
+                "price": "95.00"
+            },
+            {
+                "name": "Grants",
+                "model": "-",
+                "size": "1 LT",
+                "sku": "WISGRA1LT",
+                "quantity": 1,
+                "price": "33.90"
+            },
+            {
+                "name": "Old Par",
+                "model": "12 a\u00f1os",
+                "size": "750 ML",
+                "sku": "5000281003160",
+                "quantity": 2,
+                "price": "180.00"
+            },
+            {
+                "name": "Johnnie Walker",
+                "model": "Red label",
+                "size": "750 ML",
+                "sku": "5000267014005",
+                "quantity": 1,
+                "price": "54.00"
+            },
+            {
+                "name": "Chivas real",
+                "model": "12 a\u00f1os ",
+                "size": "750 ML",
+                "sku": "80432402931",
+                "quantity": 3,
+                "price": "270.00"
+            },
+            {
+                "name": "Grants",
+                "model": "750 ML",
+                "size": "750 ML",
+                "sku": "5010327000046",
+                "quantity": 1,
+                "price": "35.00"
+            }
+        ],
+        "totalPrice": "1005.90",
+        "discount": "50.30",
+        "finalTotal": "955.61"
+    },
+    {
+        "code": "809189",
+        "date": "2024-07-16T06:00:26.515Z",
+        "items": [
+            {
+                "name": "Ballantines",
+                "model": "Finest",
+                "size": "750 ML",
+                "sku": "5010106111451",
+                "quantity": 1,
+                "price": "46.00"
+            },
+            {
+                "name": "Ballantines",
+                "model": "Finest",
+                "size": "1 LT",
+                "sku": "5010106111956",
+                "quantity": 1,
+                "price": "58.00"
+            }
+        ],
+        "totalPrice": "104.00",
+        "discount": "5.20",
+        "finalTotal": "98.80"
+    },
+    {
+        "code": "823378",
+        "date": "2024-07-16T06:13:55.319Z",
+        "items": [
+            {
+                "name": "Combo Green Label",
+                "model": "C\/Guarana 2lt",
+                "size": "750 ML",
+                "sku": "788800000028",
+                "quantity": 1,
+                "price": "266.00"
+            },
+            {
+                "name": "Combo Green Label",
+                "model": "C\/Evervess 1.5lt",
+                "size": "750 ML",
+                "sku": "788800000027",
+                "quantity": 1,
+                "price": "266.00"
+            },
+            {
+                "name": "Combo Golden Label",
+                "model": "C\/Guarana 2lt",
+                "size": "750 ML",
+                "sku": "788800000030",
+                "quantity": 1,
+                "price": "226.00"
+            },
+            {
+                "name": "Combo Golden Label",
+                "model": "C\/Evervess 1.5lt",
+                "size": "750 ML",
+                "sku": "788800000029",
+                "quantity": 1,
+                "price": "226.00"
+            },
+            {
+                "name": "Cielo",
+                "model": "Chupon",
+                "size": "1 LT",
+                "sku": "7750670009041",
+                "quantity": 1,
+                "price": "2.50"
+            }
+        ],
+        "totalPrice": "986.50",
+        "discount": "49.33",
+        "finalTotal": "937.17"
+    },
+    {
+        "code": "897544",
+        "date": "2024-07-16T06:17:32.580Z",
+        "items": [
+            {
+                "name": "Cielo",
+                "model": "Sin gas",
+                "size": "7 LT",
+                "sku": "7750670000734",
+                "quantity": 5,
+                "price": 9,
+                "originalPrice": 10.35
+            }
+        ],
+        "subtotal": "51.75",
+        "totalDiscount": "6.75",
+        "total": "45.00"
+    },
+    {
+        "code": "793207",
+        "date": "2024-07-16T06:29:52.188Z",
+        "items": [
+            {
+                "name": "Cielo",
+                "model": "Sin gas",
+                "size": "2.5 LT",
+                "sku": "7750670313537",
+                "quantity": 1,
+                "price": 3.5,
+                "originalPrice": 4.02
+            },
+            {
+                "name": "Combo Cartujo - Caja golden",
+                "model": "C Sporade 500 ml",
+                "size": "750 ML",
+                "sku": "11110.3",
+                "quantity": 1,
+                "price": 18,
+                "originalPrice": 20.7
+            }
+        ],
+        "subtotal": "24.72",
+        "totalDiscount": "3.22",
+        "total": "21.50"
+    },
+    {
+        "code": "996963",
+        "date": "2024-07-16T07:02:46.278Z",
+        "items": [
+            {
+                "name": "Cielo",
+                "model": "Sin gas",
+                "size": "625 ML",
+                "sku": "7750670244954",
+                "quantity": 1,
+                "price": 1.5,
+                "originalPrice": 1.72
+            },
+            {
+                "name": "Cielo",
+                "model": "Sin gas",
+                "size": "2.5 LT",
+                "sku": "7750670313537",
+                "quantity": 1,
+                "price": 3.5,
+                "originalPrice": 4.02
+            },
+            {
+                "name": "Cielo",
+                "model": "Sin gas",
+                "size": "3300 ML",
+                "sku": "7750670016490",
+                "quantity": 1,
+                "price": 4.5,
+                "originalPrice": 5.17
+            },
+            {
+                "name": "Cielo",
+                "model": "Sin gas",
+                "size": "7 LT",
+                "sku": "7750670000734",
+                "quantity": 1,
+                "price": 9,
+                "originalPrice": 10.35
+            }
+        ],
+        "subtotal": "21.26",
+        "totalDiscount": "2.76",
+        "total": "18.50"
+    },
+    {
+        "code": "205742",
+        "date": "2024-07-16T07:03:35.537Z",
+        "items": [
+            {
+                "name": "Ballantines",
+                "model": "Finest",
+                "size": "1 LT",
+                "sku": "5010106111956",
+                "quantity": 1,
+                "price": 58,
+                "originalPrice": 66.7
+            },
+            {
+                "name": "Chivas real",
+                "model": "12 a\u00f1os",
+                "size": "750 ML",
+                "sku": "80432400395",
+                "quantity": 1,
+                "price": 90,
+                "originalPrice": 103.5
+            },
+            {
+                "name": "Chivas real",
+                "model": "13 a\u00f1os",
+                "size": "750 ML",
+                "sku": "5000299611104",
+                "quantity": 1,
+                "price": 100,
+                "originalPrice": 115
+            },
+            {
+                "name": "Chivas real",
+                "model": "12 a\u00f1os ",
+                "size": "750 ML",
+                "sku": "80432402931",
+                "quantity": 1,
+                "price": 90,
+                "originalPrice": 103.5
+            },
+            {
+                "name": "Ballantines",
+                "model": "Finest",
+                "size": "750 ML",
+                "sku": "5010106111451",
+                "quantity": 1,
+                "price": 46,
+                "originalPrice": 52.9
+            },
+            {
+                "name": "Aperol ",
+                "model": "Licor sabor a naranja ",
+                "size": "750 ML",
+                "sku": "721059001311",
+                "quantity": 1,
+                "price": 62,
+                "originalPrice": 71.3
+            },
+            {
+                "name": "Campari ",
+                "model": "Bitter",
+                "size": "750 ML ",
+                "sku": "10000222570",
+                "quantity": 1,
+                "price": 75,
+                "originalPrice": 86.25
+            },
+            {
+                "name": "Campari ",
+                "model": "Classic",
+                "size": "750 ML",
+                "sku": "8000040002509",
+                "quantity": 1,
+                "price": 75,
+                "originalPrice": 86.25
+            }
+        ],
+        "subtotal": "685.40",
+        "totalDiscount": "89.40",
+        "total": "596.00"
+    },
+    {
+        "code": "919187",
+        "date": "2024-07-17T04:44:11.817Z",
+        "items": [
+            {
+                "name": "Cielo",
+                "model": "Sin gas",
+                "size": "7 LT",
+                "sku": "7750670000734",
+                "quantity": 2,
+                "price": 9,
+                "originalPrice": 10.35
+            },
+            {
+                "name": "Cielo",
+                "model": "Sin gas",
+                "size": "625 ML",
+                "sku": "7750670244954",
+                "quantity": 7,
+                "price": 1.5,
+                "originalPrice": 1.72
+            },
+            {
+                "name": "Cielo",
+                "model": "Sin gas",
+                "size": "2.5 LT",
+                "sku": "7750670313537",
+                "quantity": 3,
+                "price": 3.5,
+                "originalPrice": 4.02
+            },
+            {
+                "name": "Cielo",
+                "model": "Sin gas",
+                "size": "3300 ML",
+                "sku": "7750670016490",
+                "quantity": 1,
+                "price": 4.5,
+                "originalPrice": 5.17
+            }
+        ],
+        "subtotal": "49.97",
+        "totalDiscount": "6.47",
+        "total": "43.50"
+    },
+    {
+        "code": "195213",
+        "date": "2024-07-24T04:08:55.333Z",
+        "items": [
+            {
+                "name": "Cielo",
+                "model": "Sin gas",
+                "size": "625 ML",
+                "sku": "7750670244954",
+                "quantity": 6,
+                "price": 1.5,
+                "originalPrice": 1.72
+            },
+            {
+                "name": "Cielo",
+                "model": "Sin gas",
+                "size": "2.5 LT",
+                "sku": "7750670313537",
+                "quantity": 4,
+                "price": 3.5,
+                "originalPrice": 4.02
+            },
+            {
+                "name": "Cielo",
+                "model": "Sin gas",
+                "size": "3300 ML",
+                "sku": "7750670016490",
+                "quantity": 5,
+                "price": 4.5,
+                "originalPrice": 5.17
+            }
+        ],
+        "subtotal": "52.25",
+        "totalDiscount": "6.75",
+        "total": "45.50"
+    },
+    {
+        "code": "245623",
+        "date": "2024-07-24T04:22:37.784Z",
+        "items": [
+            {
+                "name": "Cielo",
+                "model": "Sin gas",
+                "size": "625 ML",
+                "sku": "7750670244954",
+                "quantity": 6,
+                "price": 1.5,
+                "originalPrice": 1.72
+            },
+            {
+                "name": "Cielo",
+                "model": "Sin gas",
+                "size": "2.5 LT",
+                "sku": "7750670313537",
+                "quantity": 4,
+                "price": 3.5,
+                "originalPrice": 4.02
+            },
+            {
+                "name": "Cielo",
+                "model": "Sin gas",
+                "size": "3300 ML",
+                "sku": "7750670016490",
+                "quantity": 6,
+                "price": 4.5,
+                "originalPrice": 5.17
+            },
+            {
+                "name": "Ballantines",
+                "model": "Finest",
+                "size": "1 LT",
+                "sku": "5010106111956",
+                "quantity": 3,
+                "price": 58,
+                "originalPrice": 66.7
+            },
+            {
+                "name": "Barbarian",
+                "model": "Pilsener Magic Quinua BOTELLA",
+                "size": "330 ML",
+                "sku": "7756189000319",
+                "quantity": 5,
+                "price": 6.5,
+                "originalPrice": 7.47
+            }
+        ],
+        "subtotal": "294.87",
+        "totalDiscount": "38.37",
+        "total": "256.50"
+    }
+]
