@@ -291,12 +291,12 @@ function displaySearchResults(results) {
         return;
     }
 
-    searchResultsScroll.innerHTML = results.map(product => {
+    searchResultsScroll.innerHTML = results.map((product, index) => {
         const currentPrice = parseFloat(product.Precio[0]);
         const previousPrice = (currentPrice * 1.15).toFixed(2);
         
         return `
-            <div class="flex p-4 hover:bg-gray-100">
+            <div class="search-result-item flex p-4 hover:bg-gray-100 ${index >= 2 ? 'mobile-hidden' : ''}">
                 <div class="w-1/4 cursor-pointer" onclick="openProductPage('${product.SKU}')">
                     <img src="${product.Photo}" alt="${product.Nombre}" class="w-full h-24 object-contain">
                 </div>
@@ -320,6 +320,16 @@ function displaySearchResults(results) {
     }).join('');
 
     searchResults.classList.remove('hidden');
+
+    if (window.innerWidth < 768) {
+        document.body.style.overflow = 'hidden';
+        if (results.length > 2) {
+            const thirdItem = searchResultsScroll.querySelector('.search-result-item:nth-child(3)');
+            if (thirdItem) {
+                thirdItem.style.height = '58px'; // Muestra solo la mitad del tercer ítem
+            }
+        }
+    }
 }
 
 
@@ -546,13 +556,14 @@ function setupEventListeners() {
             const results = searchProducts(query);
             displaySearchResults(results);
         } else {
-            searchResults.classList.add('hidden');
+            closeSearchResults();
         }
     });
 
     document.addEventListener('click', function(event) {
         if (!searchResults.contains(event.target) && !searchInput.contains(event.target)) {
-            searchResults.classList.add('hidden');
+            closeSearchResults();
+
         }
         if (!document.getElementById('locationPopup').contains(event.target) && !document.querySelector('.location-icon').contains(event.target)) {
             closeLocationPopup();
@@ -563,7 +574,7 @@ function setupEventListeners() {
         const clickedElement = event.target;
 
         if (shoppingCart && !shoppingCart.contains(clickedElement) && 
-            !cartIcon.contains(clickedElement) && // Agregado para prevenir el cierre cuando se hace clic en el icono
+            !cartIcon.contains(clickedElement) && 
             !clickedElement.closest('button') && 
             !clickedElement.closest('a') && 
             !clickedElement.closest('input')) {
@@ -585,6 +596,18 @@ function setupEventListeners() {
             event.stopPropagation();
             hideCart();
         });
+    }
+}
+
+function closeSearchResults() {
+    const searchResults = document.getElementById('searchResults');
+    searchResults.classList.add('hidden');
+    document.body.style.overflow = '';
+    
+    // Restaurar la altura completa del tercer ítem si existe
+    const thirdItem = searchResults.querySelector('.search-result-item:nth-child(3)');
+    if (thirdItem) {
+        thirdItem.style.height = '';
     }
 }
 
@@ -618,12 +641,140 @@ async function init() {
     updateCartDisplay();
     initCartIcon();
     hideCart();
+
+    // Inicialización del menú móvil
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    if (mobileMenuBtn && mobileMenu) {
+        mobileMenuBtn.addEventListener('click', function() {
+            mobileMenu.classList.toggle('active');
+        });
+    }
+
+    // Configuración para el header y scroll
+    setupHeaderAndScroll();
+
+    // Inicialización del slider
+    initSlider();
+
+    // Animación de iconos
+    setupIconAnimation('.whatsapp-icon', '#whatsappPath');
+    setupIconAnimation('.location-icon', '#locationPath');
+}
+
+function setupHeaderAndScroll() {
+    const header = document.querySelector('header');
+    let isDesktop = window.innerWidth >= 768;
+    let lastScrollTop = 0;
+    let isTransitioning = false;
+    const scrollThreshold = 200;
+    const autoScrollThreshold = 50;
+
+    function handleScroll() {
+        if (!isDesktop) return;
+
+        const st = window.pageYOffset || document.documentElement.scrollTop;
+        
+        if (!isTransitioning) {
+            if (st > lastScrollTop && st > scrollThreshold) {
+                requestAnimationFrame(() => {
+                    header.classList.add('shrink');
+                    startTransition();
+                });
+            } else if (st < lastScrollTop && st <= scrollThreshold) {
+                requestAnimationFrame(() => {
+                    header.classList.remove('shrink');
+                    startTransition();
+                });
+
+                if (st < autoScrollThreshold) {
+                    smoothScrollToTop();
+                }
+            }
+        }
+        
+        lastScrollTop = st <= 0 ? 0 : st;
+    }
+
+    function smoothScrollToTop() {
+        const scrollToTop = () => {
+            const c = document.documentElement.scrollTop || document.body.scrollTop;
+            if (c > 0) {
+                window.requestAnimationFrame(scrollToTop);
+                window.scrollTo(0, c - c / 8);
+            }
+        };
+        scrollToTop();
+    }
+
+    function startTransition() {
+        isTransitioning = true;
+        setTimeout(() => {
+            isTransitioning = false;
+        }, 300);
+    }
+
+    function checkDeviceWidth() {
+        isDesktop = window.innerWidth >= 768;
+        if (!isDesktop) {
+            header.classList.remove('shrink');
+        } else {
+            handleScroll();
+        }
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', checkDeviceWidth);
+    checkDeviceWidth();
+}
+
+function initSlider() {
+    const slider = document.querySelector('.slider-container');
+    const slides = document.querySelectorAll('.slide');
+    const progressBar = document.querySelector('.progress-bar');
+    if (slider && slides.length > 0 && progressBar) {
+        let currentIndex = 0;
+        const slideCount = slides.length;
+        const slideDuration = 5000;
+
+        function updateSlider() {
+            slider.style.transform = `translateX(-${currentIndex * 100}vw)`;
+            const progress = ((currentIndex + 1) / slideCount) * 100;
+            progressBar.style.transform = `translateX(${progress - 100}%)`;
+        }
+
+        function nextSlide() {
+            currentIndex = (currentIndex + 1) % slideCount;
+            updateSlider();
+        }
+
+        updateSlider();
+        setInterval(nextSlide, slideDuration);
+    }
+}
+
+function setupIconAnimation(iconSelector, pathSelector) {
+    const icon = document.querySelector(iconSelector);
+    const path = document.querySelector(pathSelector);
+    if (icon && path) {
+        icon.addEventListener('mouseenter', function() {
+            path.style.animation = 'none';
+            setTimeout(() => {
+                path.style.animation = 'spiral 0.5s ease-in-out forwards';
+            }, 5);
+        });
+        icon.addEventListener('mouseleave', function() {
+            path.style.animation = 'none';
+            setTimeout(() => {
+                path.style.animation = 'spiral 0.5s ease-in-out reverse forwards';
+            }, 5);
+        });
+    }
 }
 
 function generateQuoteCode() {
     return Math.floor(100000 + Math.random() * 900000).toString();
 }
-
 
 async function saveQuotation(quoteData) {
     try {
@@ -656,7 +807,6 @@ async function saveQuotation(quoteData) {
         alert('Hubo un error al guardar la cotización. Por favor, inténtelo de nuevo.');
     }
 }
-
 
 function proceedToCheckout() {
     const phoneNumber = "51938101013";
@@ -709,107 +859,4 @@ function proceedToCheckout() {
     window.open(whatsappLink, '_blank');
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM fully loaded and parsed');
-    init();
-
-    const whatsappIcon = document.querySelector('.whatsapp-icon');
-    const whatsappPath = document.querySelector('#whatsappPath');
-    const locationIcon = document.querySelector('.location-icon');
-    const locationPath = document.querySelector('#locationPath');
-
-    function setupIconAnimation(icon, path) {
-        if (icon && path) {
-            icon.addEventListener('mouseenter', function() {
-                path.style.animation = 'none';
-                setTimeout(() => {
-                    path.style.animation = 'spiral 0.5s ease-in-out forwards';
-                }, 5);
-            });
-
-            icon.addEventListener('mouseleave', function() {
-                path.style.animation = 'none';
-                setTimeout(() => {
-                    path.style.animation = 'spiral 0.5s ease-in-out reverse forwards';
-                }, 5);
-            });
-        }
-    }
-
-    setupIconAnimation(whatsappIcon, whatsappPath);
-    setupIconAnimation(locationIcon, locationPath);
-
-    // SLIDER
-
-    const slider = document.querySelector('.slider-container');
-    const slides = document.querySelectorAll('.slide');
-    const progressBar = document.querySelector('.progress-bar');
-
-    let currentIndex = 0;
-    const slideCount = slides.length;
-    const slideDuration = 5000; // 5 segundos por slide
-
-    function updateSlider() {
-        const slider = document.querySelector('.slider-container');
-        if (slider) {
-            slider.style.transform = `translateX(-${currentIndex * 100}vw)`;
-            updateProgress();
-        } else {
-            console.log('Slider not found on this page');
-        }
-    }
-
-    function updateProgress() {
-        const progress = ((currentIndex + 1) / slideCount) * 100;
-        progressBar.style.transform = `translateX(${progress - 100}%)`;
-    }
-
-    function nextSlide() {
-        currentIndex = (currentIndex + 1) % slideCount;
-        updateSlider();
-    }
-
-    updateSlider();
-
-    // Cambio automático de slide cada 5 segundos
-    setInterval(nextSlide, slideDuration);
-
-     // Anmacion header
-
-     let lastScrollTop = 0;
-     let isTransitioning = false;
-     const header = document.querySelector('header');
-     const scrollThreshold = 200;
-     
-     function handleScroll() {
-         const st = window.pageYOffset || document.documentElement.scrollTop;
-         
-         if (!isTransitioning) {
-             if (st > lastScrollTop && st > scrollThreshold) {
-                 // Scrolling down
-                 requestAnimationFrame(() => {
-                     header.classList.add('shrink');
-                     startTransition();
-                 });
-             } else if (st < lastScrollTop && st <= scrollThreshold) {
-                 // Scrolling up
-                 requestAnimationFrame(() => {
-                     header.classList.remove('shrink');
-                     startTransition();
-                 });
-             }
-         }
-         
-         lastScrollTop = st <= 0 ? 0 : st; // For mobile or negative scrolling
-     }
-     
-     function startTransition() {
-         isTransitioning = true;
-         setTimeout(() => {
-             isTransitioning = false;
-         }, 300); // This should match your CSS transition duration
-     }
-     
-     window.addEventListener('scroll', handleScroll, { passive: true });
-     });
-
+document.addEventListener('DOMContentLoaded', init);
