@@ -621,5 +621,169 @@
         "subtotal": "294.87",
         "totalDiscount": "38.37",
         "total": "256.50"
+    },
+    {
+        "code": "707956",
+        "date": "2024-08-01T04:52:57.680Z",
+        "items": [
+            {
+                "name": "Old Times",
+                "model": "Rojo",
+                "size": "1 LT",
+                "sku": "7751738003308",
+                "quantity": 4,
+                "price": 24.5,
+                "originalPrice": "24.5"
+            },
+            {
+                "name": "Ballantines",
+                "model": "Finest",
+                "size": "1 LT",
+                "sku": "5010106111956",
+                "quantity": 4,
+                "price": 58,
+                "originalPrice": "58.5"
+            },
+            {
+                "name": "Intipalka",
+                "model": "Quebranta",
+                "size": "750 ML",
+                "sku": "7758218000864",
+                "quantity": 2,
+                "price": 42,
+                "originalPrice": "40.5"
+            },
+            {
+                "name": "Beefeater",
+                "model": "Pink Strawberry",
+                "size": "750 ML",
+                "sku": "5000299605950",
+                "quantity": 8,
+                "price": 90,
+                "originalPrice": "90.0"
+            },
+            {
+                "name": "Abuelo",
+                "model": "A\u00f1ejo",
+                "size": "1 LT",
+                "sku": "88291100302",
+                "quantity": 1,
+                "price": 42.9,
+                "originalPrice": "43.0"
+            }
+        ],
+        "subtotal": "1176.00",
+        "totalDiscount": "-0.90",
+        "total": "1176.90"
+    },
+    {
+        "code": "750239",
+        "date": "2024-08-01T04:58:39.169Z",
+        "items": [
+            {
+                "name": "Old Times",
+                "model": "Rojo",
+                "size": "1 LT",
+                "sku": "7751738003308",
+                "quantity": 4,
+                "price": 24.5,
+                "originalPrice": "24.5"
+            },
+            {
+                "name": "Ballantines",
+                "model": "Finest",
+                "size": "1 LT",
+                "sku": "5010106111956",
+                "quantity": 4,
+                "price": 58,
+                "originalPrice": "58.5"
+            },
+            {
+                "name": "Intipalka",
+                "model": "Quebranta",
+                "size": "750 ML",
+                "sku": "7758218000864",
+                "quantity": 2,
+                "price": 42,
+                "originalPrice": "40.5"
+            },
+            {
+                "name": "Beefeater",
+                "model": "Pink Strawberry",
+                "size": "750 ML",
+                "sku": "5000299605950",
+                "quantity": 8,
+                "price": 90,
+                "originalPrice": "90.0"
+            },
+            {
+                "name": "Abuelo",
+                "model": "A\u00f1ejo",
+                "size": "1 LT",
+                "sku": "88291100302",
+                "quantity": 2,
+                "price": 42.9,
+                "originalPrice": "43.0"
+            }
+        ],
+        "subtotal": "1219.00",
+        "totalDiscount": "-0.80",
+        "total": "1219.80",
+        "timestamp": "2024-08-01 04:58:39"
+    },
+    {
+        "code": "801895",
+        "date": "2024-08-01T05:02:39.930Z",
+        "items": [
+            {
+                "name": "Old Times",
+                "model": "Rojo",
+                "size": "1 LT",
+                "sku": "7751738003308",
+                "quantity": 4,
+                "price": 24.5,
+                "originalPrice": 28.174999999999997
+            },
+            {
+                "name": "Ballantines",
+                "model": "Finest",
+                "size": "1 LT",
+                "sku": "5010106111956",
+                "quantity": 4,
+                "price": 58,
+                "originalPrice": 66.69999999999999
+            },
+            {
+                "name": "Intipalka",
+                "model": "Quebranta",
+                "size": "750 ML",
+                "sku": "7758218000864",
+                "quantity": 2,
+                "price": 42,
+                "originalPrice": 48.3
+            },
+            {
+                "name": "Beefeater",
+                "model": "Pink Strawberry",
+                "size": "750 ML",
+                "sku": "5000299605950",
+                "quantity": 8,
+                "price": 90,
+                "originalPrice": 103.49999999999999
+            },
+            {
+                "name": "Abuelo",
+                "model": "A\u00f1ejo",
+                "size": "1 LT",
+                "sku": "88291100302",
+                "quantity": 2,
+                "price": 42.9,
+                "originalPrice": 49.334999999999994
+            }
+        ],
+        "subtotal": "1402.77",
+        "totalDiscount": "182.97",
+        "total": "1219.80",
+        "timestamp": "2024-08-01 00:02:39"
     }
 ]

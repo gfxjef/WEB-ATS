@@ -291,27 +291,32 @@ function displaySearchResults(results) {
         return;
     }
 
-    searchResultsScroll.innerHTML = results.map(product => `
-        <div class="flex p-4 hover:bg-gray-100">
-            <div class="w-1/4 cursor-pointer" onclick="openProductPage('${product.SKU}')">
-                <img src="${product.Photo}" alt="${product.Nombre}" class="w-full h-24 object-contain">
-            </div>
-            <div class="w-3/4 pl-4 flex flex-col justify-between">
-                <div>
-                    <h3 class="text-lg font-semibold cursor-pointer" onclick="openProductPage('${product.SKU}')">${product.Nombre} ${product.Modelo}</h3>
-                    <p class="text-sm text-gray-600">SKU: ${product.SKU}</p>
-                    <p class="text-sm text-gray-600">Tamaño: ${product.Tamaño}</p>
+    searchResultsScroll.innerHTML = results.map(product => {
+        const currentPrice = parseFloat(product.Precio[0]);
+        const previousPrice = (currentPrice * 1.15).toFixed(2);
+        
+        return `
+            <div class="flex p-4 hover:bg-gray-100">
+                <div class="w-1/4 cursor-pointer" onclick="openProductPage('${product.SKU}')">
+                    <img src="${product.Photo}" alt="${product.Nombre}" class="w-full h-24 object-contain">
                 </div>
-                <div class="flex justify-between items-center">
-                    <div class="text-right">
-                        <p class="text-lg font-bold text-red-600">S/. ${product.Precio[0].toFixed(2)}</p>
-                        ${product.Precio[1] !== "0" ? `<p class="text-sm line-through text-gray-500">S/. ${product.Precio[1]}</p>` : ''}
+                <div class="w-3/4 pl-4 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold cursor-pointer" onclick="openProductPage('${product.SKU}')">${product.Nombre} ${product.Modelo}</h3>
+                        <p class="text-sm text-gray-600">SKU: ${product.SKU}</p>
+                        <p class="text-sm text-gray-600">Tamaño: ${product.Tamaño}</p>
                     </div>
-                    <button onclick="addToCart('${product.SKU}'); event.stopPropagation();" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Añadir</button>
+                    <div class="flex justify-between items-center">
+                        <div class="text-right">
+                            <p class="text-lg font-bold text-red-600">S/. ${currentPrice.toFixed(2)}</p>
+                            <p class="text-sm line-through text-gray-500">S/. ${previousPrice}</p>
+                        </div>
+                        <button onclick="addToCart('${product.SKU}'); event.stopPropagation();" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Añadir</button>
+                    </div>
                 </div>
             </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 
     searchResults.classList.remove('hidden');
 }
@@ -333,23 +338,25 @@ function saveCart() {
     localStorage.setItem('cart', JSON.stringify(cart));
 }
 
-function addToCart(sku) {
+function addToCart(sku, quantityToAdd = 1) {
     const productToAdd = sku ? allProducts.find(p => p.SKU === sku) : currentProduct;
     if (productToAdd) {
         const existingItem = cart.find(item => item.SKU === productToAdd.SKU);
         if (existingItem) {
-            existingItem.quantity += quantity;
+            existingItem.quantity += quantityToAdd;
         } else {
-            cart.push({ ...productToAdd, quantity: quantity });
+            cart.push({ ...productToAdd, quantity: quantityToAdd });
         }
         saveCart();
         updateCartDisplay();
         showCart();
-        quantity = 1;
-        if (document.getElementById('quantity')) {
-            document.getElementById('quantity').textContent = quantity;
+        if (typeof quantity !== 'undefined') {
+            quantity = 1;
+            if (document.getElementById('quantity')) {
+                document.getElementById('quantity').textContent = quantity;
+            }
         }
-        if (currentProduct) {
+        if (typeof currentProduct !== 'undefined' && typeof updateSubtotal === 'function') {
             updateSubtotal();
         }
     }
@@ -364,7 +371,9 @@ function updateCartDisplay() {
     if (cartItems && cartFooter) {
         cartItems.innerHTML = cart.map(item => {
             const currentPrice = parseFloat(item.Precio[0]);
-            const previousPrice = parseFloat(item.Precio[1]) || currentPrice * 1.15;
+            const previousPrice = (currentPrice * 1.15);
+            const totalCurrentPrice = currentPrice * item.quantity;
+            const totalPreviousPrice = previousPrice * item.quantity;
             
             return `
                 <div class="flex items-center border-b border-gray-200 py-2">
@@ -377,8 +386,8 @@ function updateCartDisplay() {
                         </h3>
                         <p class="text-sm text-gray-600">SKU: ${item.SKU}</p>
                         <div class="flex justify-between items-center text-sm mt-1">
-                            <p class="font-bold text-red-600">S/. ${currentPrice.toFixed(2)}</p>
-                            <p class="line-through text-gray-500">S/. ${previousPrice.toFixed(2)}</p>
+                            <p class="font-bold text-red-600">S/. ${totalCurrentPrice.toFixed(2)}</p>
+                            <p class="line-through text-gray-500">S/. ${totalPreviousPrice.toFixed(2)}</p>
                         </div>
                     </div>
                     <div class="flex-shrink-0 text-right ml-4">
@@ -403,7 +412,7 @@ function updateCartDisplay() {
 
         cart.forEach(item => {
             const currentPrice = parseFloat(item.Precio[0]);
-            const previousPrice = parseFloat(item.Precio[1]) || currentPrice * 1.15;
+            const previousPrice = currentPrice * 1.15;
             subtotal += previousPrice * item.quantity;
             totalDiscount += (previousPrice - currentPrice) * item.quantity;
             total += currentPrice * item.quantity;
@@ -430,6 +439,7 @@ function updateCartDisplay() {
         `;
     }
 }
+
 
 function updateCartItemQuantity(sku, change) {
     const item = cart.find(item => item.SKU === sku);
@@ -623,15 +633,29 @@ async function saveQuotation(quoteData) {
             },
             body: JSON.stringify(quoteData),
         });
+
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
+
+        const responseText = await response.text();
+        console.log('Response text:', responseText);
+
         if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}, message: ${responseText}`);
+        }
+
+        const result = JSON.parse(responseText);
+        if (!result.success) {
             throw new Error('Failed to save quotation');
         }
+
         console.log('Quotation saved successfully');
     } catch (error) {
         console.error('Error saving quotation:', error);
         alert('Hubo un error al guardar la cotización. Por favor, inténtelo de nuevo.');
     }
 }
+
 
 function proceedToCheckout() {
     const phoneNumber = "51938101013";
@@ -643,8 +667,8 @@ function proceedToCheckout() {
     let total = 0;
 
     cart.forEach(item => {
-        const currentPrice = item.Precio[0];
-        const previousPrice = item.Precio[1];
+        const currentPrice = parseFloat(item.Precio[0]);
+        const previousPrice = currentPrice * 1.15;
         const itemTotal = currentPrice * item.quantity;
         const itemDiscount = (previousPrice - currentPrice) * item.quantity;
         
@@ -672,8 +696,8 @@ function proceedToCheckout() {
             size: item.Tamaño,
             sku: item.SKU,
             quantity: item.quantity,
-            price: item.Precio[0],
-            originalPrice: item.Precio[1]
+            price: parseFloat(item.Precio[0]),
+            originalPrice: parseFloat(item.Precio[0]) * 1.15
         })),
         subtotal: subtotal.toFixed(2),
         totalDiscount: totalDiscount.toFixed(2),

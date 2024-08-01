@@ -433,8 +433,13 @@ body {
             document.getElementById('productCategory').innerHTML = `<a href="index.html">inicio</a> / ${currentProduct.Categoria.toLowerCase()} / ${currentProduct.Nombre.toLowerCase()}`;
             document.getElementById('productName').textContent = `${currentProduct.Nombre} ${currentProduct.Modelo} ${currentProduct.Tamaño}`;
             document.getElementById('productSKU').textContent = `SKU: ${currentProduct.SKU}`;
-            document.getElementById('productPrice').textContent = `S/. ${parseFloat(currentProduct.Precio[0]).toFixed(2)}`;
-            document.getElementById('discountPrice').textContent = `S/. ${(parseFloat(currentProduct.Precio[0]) * 0.9).toFixed(2)}`;
+            
+            // Modificación en la parte de los precios
+            const currentPrice = parseFloat(currentProduct.Precio[0]);
+            const previousPrice = (currentPrice * 1.15).toFixed(2);
+            document.getElementById('productPrice').textContent = `S/. ${previousPrice}`;
+            document.getElementById('discountPrice').textContent = `S/. ${currentPrice.toFixed(2)}`;
+            
             document.getElementById('productDescription').textContent = currentProduct.Descripcion || 'Descripción no disponible';
             updateSubtotal();
 
