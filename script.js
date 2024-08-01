@@ -302,14 +302,15 @@ function displaySearchResults(results) {
                 </div>
                 <div class="w-3/4 pl-4 flex flex-col justify-between">
                     <div>
-                        <h3 class="text-lg font-semibold cursor-pointer" onclick="openProductPage('${product.SKU}')">${product.Nombre} ${product.Modelo}</h3>
-                        <p class="text-sm text-gray-600">SKU: ${product.SKU}</p>
+                        <h3 class="text-base font-semibold cursor-pointer" style="font-size: 1rem;" onclick="openProductPage('${product.SKU}')">
+                            ${product.Nombre} ${product.Modelo}
+                        </h3>
                         <p class="text-sm text-gray-600">Tamaño: ${product.Tamaño}</p>
                     </div>
                     <div class="flex justify-between items-center">
-                        <div class="text-right">
-                            <p class="text-lg font-bold text-red-600">S/. ${currentPrice.toFixed(2)}</p>
-                            <p class="text-sm line-through text-gray-500">S/. ${previousPrice}</p>
+                        <div>
+                            <span class="text-lg font-bold text-red-600">S/. ${currentPrice.toFixed(2)}</span>
+                            <span class="text-sm line-through text-gray-500 ml-2">S/. ${previousPrice}</span>
                         </div>
                         <button onclick="addToCart('${product.SKU}'); event.stopPropagation();" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Añadir</button>
                     </div>
