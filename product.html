@@ -297,14 +297,18 @@ body {
                 </div>
             </div>
     
-            <div id="relatedProducts" class="mt-8">
+            <div class="related-products-container relative">
                 <h2 class="text-2xl font-bold mb-4">Productos Relacionados</h2>
-                <div class="related-products-container">
-                    <div class="related-products-scroll grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                        <!-- Los productos relacionados se insertarán aquí dinámicamente -->
-                    </div>
+                <button id="prevRelated" class="carousel-arrow left-0 absolute top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 rounded-full p-2 shadow-md z-10">&lt;</button>
+                
+                <div class="related-products-scroll flex overflow-x-auto space-x-4">
+                    <!-- Los productos relacionados irán aquí -->
                 </div>
+                
+                <button id="nextRelated" class="carousel-arrow right-0 absolute top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 rounded-full p-2 shadow-md z-10">&gt;</button>
             </div>
+            
+                        
             
             
 

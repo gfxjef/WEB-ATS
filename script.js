@@ -224,14 +224,39 @@ function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 }
 
-function getRelatedProducts(currentProduct, count = 5) {
-    return allProducts
-        .filter(product => 
-            product.Categoria === currentProduct.Categoria && 
-            product.SKU !== currentProduct.SKU
-        )
-        .sort(() => 0.5 - Math.random())
-        .slice(0, count);
+function getRelatedProducts(currentProduct, count = 15) {
+    console.log('getRelatedProducts called for product:', currentProduct.SKU);
+    console.log('Current product category:', currentProduct.Categoria);
+
+    const relatedProducts = allProducts.filter(product => {
+        const isRelated = product.Categoria === currentProduct.Categoria && 
+                          product.SKU !== currentProduct.SKU &&
+                          product.Stock === "Con Stock";
+        
+        if (isRelated) {
+            console.log('Related product found:', product.SKU, product.Nombre, 'Stock:', product.Stock);
+        } else if (product.Categoria === currentProduct.Categoria) {
+            console.log('Product filtered out:', product.SKU, product.Nombre, 'Stock:', product.Stock);
+        }
+        
+        return isRelated;
+    });
+    
+    console.log('Total related products found:', relatedProducts.length);
+    
+    // Mezclar el array de productos relacionados
+    for (let i = relatedProducts.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [relatedProducts[i], relatedProducts[j]] = [relatedProducts[j], relatedProducts[i]];
+    }
+    
+    const result = relatedProducts.slice(0, count);
+    console.log(`Returning ${result.length} related products`);
+    result.forEach(product => {
+        console.log('Selected related product:', product.SKU, product.Nombre, 'Stock:', product.Stock);
+    });
+    
+    return result;
 }
 
 
@@ -1184,8 +1209,8 @@ async function loadProductDetails() {
         if (currentProduct) {
             console.log(`Product found: ${JSON.stringify(currentProduct)}`);
             document.getElementById('productImage').src = currentProduct.Photo;
-            document.getElementById('productCategory').innerHTML = `<a href="index.html">inicio</a> / ${currentProduct.Categoria.toLowerCase()} / ${currentProduct.Nombre.toLowerCase()}`;
-            document.getElementById('productName').textContent = `${currentProduct.Nombre} ${currentProduct.Modelo} ${currentProduct.Tamaño}`;
+            document.getElementById('productCategory').innerHTML = generateCategoryLinks(currentProduct);
+            document.getElementById('productName').textContent = formatProductName(currentProduct);
             document.getElementById('productSKU').textContent = `SKU: ${currentProduct.SKU}`;
             
             const currentPrice = parseFloat(currentProduct.Precio[0]);
@@ -1204,35 +1229,122 @@ async function loadProductDetails() {
     }
 }
 
-
-function loadRelatedProducts(currentProduct) {
-    const relatedProducts = getRelatedProducts(currentProduct, 5);
-    const relatedProductsContainer = document.querySelector('.related-products-scroll');
-    if (relatedProductsContainer) {
-        const relatedProductsHTML = relatedProducts.map(relatedProduct => `
-            <div class="product-card bg-white p-2 rounded shadow">
-                <div class="product-card-image-container">
-                    <img src="${relatedProduct.Photo}" alt="${relatedProduct.Nombre}" class="cursor-pointer" 
-                         onclick="openProductPage('${relatedProduct.SKU}')" 
-                         onerror="handleImageError(this)">
-                </div>
-                <h3 class="text-sm font-semibold mb-1 cursor-pointer h-12 overflow-hidden" onclick="openProductPage('${relatedProduct.SKU}')">
-                    ${capitalizeFirstLetter(relatedProduct.Categoria)} ${relatedProduct.Nombre.toUpperCase()} ${relatedProduct.Modelo} ${relatedProduct.Tamaño}
-                </h3>
-                <div class="flex justify-between items-center text-sm">
-                    <p class="font-bold text-red-600">S/. ${parseFloat(relatedProduct.Precio[0]).toFixed(2)}</p>
-                    <p class="line-through text-gray-500">S/. ${(parseFloat(relatedProduct.Precio[0]) * 1.15).toFixed(2)}</p>
-                </div>
-                <button onclick="addToCart('${relatedProduct.SKU}')" class="mt-2 bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 w-full text-sm">Añadir</button>
-            </div>
-        `).join('');
-        relatedProductsContainer.innerHTML = relatedProductsHTML;
-
-        addScrollIndicator();
+function formatProductName(product) {
+    if (product['Sub Categoria'] === 'Combos') {
+        return `${product.Nombre} ${product.Modelo}`;
     } else {
-        console.error('No se encontró el contenedor de productos relacionados');
+        return `${product.Nombre} ${product.Modelo} ${product.Tamaño}`;
     }
 }
+
+function generateCategoryLinks(product) {
+    const capitalizeFirstLetter = (string) => {
+        return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+    };
+
+    const links = [
+        `<a href="index.html">${capitalizeFirstLetter('inicio')}</a>`,
+        `<a href="search-results.html?query=${encodeURIComponent(product.Categoria)}">${capitalizeFirstLetter(product.Categoria)}</a>`,
+        `<a href="search-results.html?query=${encodeURIComponent(product.Nombre)}">${capitalizeFirstLetter(product.Nombre)}</a>`
+    ];
+    return links.join(' / ');
+}
+
+
+function loadRelatedProducts(currentProduct) {
+    console.log('loadRelatedProducts called for product:', currentProduct.SKU);
+    const relatedProducts = getRelatedProducts(currentProduct, 15);
+    const relatedProductsContainer = document.querySelector('.related-products-container');
+    if (relatedProductsContainer) {
+        const relatedProductsHTML = relatedProducts
+            .filter(product => product.Stock === "Con Stock")
+            .map((relatedProduct, index) => {
+                console.log(`Rendering related product ${index + 1}:`, relatedProduct.SKU, relatedProduct.Nombre, 'Stock:', relatedProduct.Stock);
+                return `
+                    <div class="product-card bg-white p-2 rounded shadow flex-shrink-0 w-48" data-index="${index}">
+                        <div class="product-card-image-container">
+                            <img src="${relatedProduct.Photo}" alt="${relatedProduct.Nombre}" class="w-full h-32 object-cover cursor-pointer" 
+                                 onclick="openProductPage('${relatedProduct.SKU}')" 
+                                 onerror="handleImageError(this)">
+                        </div>
+                        <h3 class="text-sm font-semibold mb-1 cursor-pointer h-12 overflow-hidden" onclick="openProductPage('${relatedProduct.SKU}')">
+                            ${formatProductName(relatedProduct)}
+                        </h3>
+                        <div class="flex justify-between items-center text-sm">
+                            <p class="font-bold text-red-600">S/. ${parseFloat(relatedProduct.Precio[0]).toFixed(2)}</p>
+                            <p class="line-through text-gray-500">S/. ${(parseFloat(relatedProduct.Precio[0]) * 1.15).toFixed(2)}</p>
+                        </div>
+                        <button onclick="addToCart('${relatedProduct.SKU}')" class="mt-2 bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 w-full text-sm">Añadir</button>
+                    </div>
+                `;
+            }).join('');
+
+            relatedProductsContainer.innerHTML = `
+                <h2 class="text-2xl font-bold mb-4">Productos Relacionados</h2>
+                <button id="prevRelated" class="carousel-arrow left-0 absolute top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50  p-2 shadow-md z-10">&lt;</button>
+                <div class="related-products-scroll flex space-x-4">
+                    ${relatedProductsHTML}
+                </div>
+                <button id="nextRelated" class="carousel-arrow right-0 absolute top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50  p-2 shadow-md z-10">&gt;</button>
+            `;
+    
+            setupRelatedProductsCarousel();
+        } else {
+            console.error('No se encontró el contenedor de productos relacionados');
+        }
+    }
+    
+function setupRelatedProductsCarousel() {
+    const container = document.querySelector('.related-products-scroll');
+    const prevBtn = document.getElementById('prevRelated');
+    const nextBtn = document.getElementById('nextRelated');
+    let scrollAmount = 0;
+
+    prevBtn.addEventListener('click', () => {
+        scrollAmount = Math.max(scrollAmount - container.offsetWidth, 0);
+        container.scrollTo({
+            left: scrollAmount,
+            behavior: 'smooth'
+        });
+    });
+
+    nextBtn.addEventListener('click', () => {
+        scrollAmount = Math.min(scrollAmount + container.offsetWidth, container.scrollWidth - container.offsetWidth);
+        container.scrollTo({
+            left: scrollAmount,
+            behavior: 'smooth'
+        });
+    });
+
+    function updateArrowsVisibility() {
+        const isMobile = window.innerWidth < 768;
+        const hasHorizontalScroll = container.scrollWidth > container.clientWidth;
+
+        prevBtn.style.display = isMobile || !hasHorizontalScroll ? 'none' : 'block';
+        nextBtn.style.display = isMobile || !hasHorizontalScroll ? 'none' : 'block';
+
+        if (!isMobile && hasHorizontalScroll) {
+            prevBtn.style.visibility = scrollAmount <= 0 ? 'hidden' : 'visible';
+            nextBtn.style.visibility = scrollAmount >= container.scrollWidth - container.offsetWidth ? 'hidden' : 'visible';
+        }
+    }
+
+    container.addEventListener('scroll', updateArrowsVisibility);
+    window.addEventListener('resize', updateArrowsVisibility);
+    
+    // Llamar a updateArrowsVisibility después de un breve retraso para asegurar que el contenido se ha renderizado
+    setTimeout(updateArrowsVisibility, 100);
+
+    // Añadir funcionalidad de scroll suave para dispositivos móviles
+    if ('ontouchstart' in window || navigator.maxTouchPoints) {
+        container.style.scrollBehavior = 'smooth';
+        container.style.scrollSnapType = 'x mandatory';
+        container.querySelectorAll('.product-card').forEach(card => {
+            card.style.scrollSnapAlign = 'start';
+        });
+    }
+}
+
 
 function addScrollIndicator() {
     if (window.innerWidth < 768) {
