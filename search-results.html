@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tienda de Bebidas y Productos</title>
+    <title>Resultados de Búsqueda</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -26,14 +26,14 @@
                         </div>
                     </div>
                 </div>
-                    
+                
                 <!-- Logotipo -->
                 <div class="w-1/3 flex justify-center">
                     <a href="index.html">
                         <img src="logo_ats_blueblack.png" alt="Logo" class="h-[120px]">
                     </a>
                 </div>
-    
+                
                 <!-- Iconos de redes sociales -->
                 <div class="w-1/3 flex justify-end space-x-4">
                     <a href="#" class="text-[#fee305] hover:text-white transition-colors duration-300">
@@ -56,87 +56,52 @@
         </div>
     </header>
 
-
-    
-    <main class="container mx-auto px-4 pt-0 pb-8">
-        <div class="banner-slider w-screen overflow-hidden">
-            <div class="slider-container">
-                <a href="#link1" class="slide active"><img src="images/ban1.webp" alt="Banner 1"></a>
-                <a href="#link2" class="slide"><img src="images/ban2.webp" alt="Banner 2"></a>
-                <a href="#link3" class="slide"><img src="images/ban3.webp" alt="Banner 3"></a>
-                <a href="#link4" class="slide"><img src="images/ban4.webp" alt="Banner 4"></a>
-                <a href="#link5" class="slide"><img src="images/ban5.webp" alt="Banner 5"></a>
-            </div>
-            <div class="slider-progress">
-                <div class="progress-bar"></div>
-            </div>
-        </div>
+    <div class="container mx-auto px-4 py-8">
+        <h1 id="searchTitle" class="text-3xl font-bold mb-4">Resultados de búsqueda para: <span id="searchQuery"></span></h1>
         
-                
-        <div class="flex">
-            <!-- Columna de categorías -->
-            <div class="w-1/4 pr-4">
-                <h2 class="text-2xl font-bold mb-4">Categorías</h2>
-                <ul id="categoryList" class="space-y-2">
-                    <!-- Las categorías se generarán dinámicamente aquí -->
-                </ul>
+        <div class="flex flex-wrap">
+            <!-- Filtros -->
+            <div class="w-full md:w-1/4 pr-4 mb-4">
+                <div id="filters" class="bg-white p-4 rounded shadow">
+                    <h2 class="text-xl font-semibold mb-2">Filtros</h2>
+                    <!-- Los filtros se generarán dinámicamente aquí -->
+                </div>
             </div>
-            
-            <!-- Columna de productos -->
-            <div class="w-3/4">
-                <div id="productGrid" class="grid grid-cols-5 gap-4">
+
+            <!-- Resultados -->
+            <div class="w-full md:w-3/4">
+                <div id="searchInfo" class="mb-4">
+                    <p>Mostrando <span id="resultCount"></span> resultados</p>
+                </div>
+                <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     <!-- Los productos se generarán dinámicamente aquí -->
                 </div>
-                
-                <!-- Paginación -->
                 <div id="pagination" class="mt-8 flex justify-center">
                     <!-- La paginación se generará dinámicamente aquí -->
                 </div>
             </div>
         </div>
-    </main>
+    </div>
 
     <!-- Carrito de compras -->
-<div id="shoppingCart" class="fixed top-0 right-0 h-full w-80 bg-white shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
-    <div class="p-4 border-b border-gray-200 flex justify-between items-center">
-        <h2 class="text-2xl font-bold">Carrito de Compras</h2>
-        <button onclick="hideCart()" class="text-gray-500 hover:text-gray-700">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-        </button>
-    </div>
-    
-    <div id="cartItems" class="flex-grow overflow-y-auto p-4">
-        <!-- Los items del carrito se generarán dinámicamente aquí -->
-    </div>
-    
-    <div id="cartFooter" class="p-4 border-t border-gray-200 bg-white">
-        <div class="mb-4">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-lg">Subtotal:</span>
-                <span class="text-lg font-bold" id="cartSubtotal">S/. 0.00</span>
+    <div id="shoppingCart" class="fixed top-0 right-0 h-full w-80 bg-white shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out">
+        <div class="p-4 h-full flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold">Carrito de Compras</h2>
+                <button onclick="hideCart()" class="text-gray-500 hover:text-gray-700 close-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
             </div>
-            <div class="flex justify-between items-center mb-2 text-green-600">
-                <span class="text-lg">Descuento:</span>
-                <span class="text-lg font-bold" id="cartDiscount">- S/. 0.00</span>
+            <div id="cartItems" class="flex-grow overflow-y-auto">
+                <!-- Los items del carrito se generarán dinámicamente aquí -->
             </div>
-            <div class="flex justify-between items-center mb-4 text-xl font-bold">
-                <span>Total:</span>
-                <span id="cartTotal">S/. 0.00</span>
+            <div id="cartFooter">
+                <!-- El total y el botón de Checkout se generarán dinámicamente aquí -->
             </div>
         </div>
-        <button onclick="proceedToCheckout()" class="w-full bg-blue-500 text-white font-bold py-3 px-4 rounded hover:bg-blue-600 transition duration-300">
-            Solicitar Pedido
-        </button>
     </div>
-    
-    <button id="floatingCheckoutButton" onclick="scrollToCartFooter()" class="md:hidden fixed bottom-20 right-6 bg-blue-500 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-        </svg>
-    </button>
-</div>
 
     <!-- Icono del carrito -->
     <div id="cartIcon" class="fixed bottom-4 right-4 bg-blue-500 rounded-full p-3 cursor-pointer shadow-lg hover:bg-blue-600 transition-colors duration-300 z-50">
@@ -171,5 +136,12 @@
     <iframe id="locationPopup" src="location-popup.html" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4/5 h-4/5 max-w-2xl max-h-xl bg-white rounded-lg shadow-xl hidden z-50"></iframe>
 
     <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initSearchResults();
+            setupEventListeners();
+            initCartIcon();
+        });
+    </script>
 </body>
 </html>

@@ -297,12 +297,16 @@ body {
                 </div>
             </div>
     
-        <div id="relatedProducts" class="mt-8">
-            <h2 class="text-2xl font-bold mb-4">Productos Relacionados</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                <!-- Los productos relacionados se insertarán aquí dinámicamente -->
+            <div id="relatedProducts" class="mt-8">
+                <h2 class="text-2xl font-bold mb-4">Productos Relacionados</h2>
+                <div class="related-products-container">
+                    <div class="related-products-scroll grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                        <!-- Los productos relacionados se insertarán aquí dinámicamente -->
+                    </div>
+                </div>
             </div>
-        </div>
+            
+            
 
 
         <div class="divtragos-container">
@@ -407,117 +411,6 @@ body {
 
     <script src="script.js"></script>
     <script>
-        let currentProduct;
-        let quantity = 1;
-    
-        async function init() {
-            try {
-                await loadProducts();
-                loadCart();
-                await loadProductDetails();
-                updateCartDisplay();
-                initCartIcon();
-                setupEventListeners();
-            } catch (error) {
-                console.error("Error during initialization:", error);
-            }
-        }
-        
-        async function loadProductDetails() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const sku = urlParams.get('sku');
-    if (sku) {
-        currentProduct = allProducts.find(p => p.SKU === sku);
-        if (currentProduct) {
-            document.getElementById('productImage').src = currentProduct.Photo;
-            document.getElementById('productCategory').innerHTML = `<a href="index.html">inicio</a> / ${currentProduct.Categoria.toLowerCase()} / ${currentProduct.Nombre.toLowerCase()}`;
-            document.getElementById('productName').textContent = `${currentProduct.Nombre} ${currentProduct.Modelo} ${currentProduct.Tamaño}`;
-            document.getElementById('productSKU').textContent = `SKU: ${currentProduct.SKU}`;
-            
-            // Modificación en la parte de los precios
-            const currentPrice = parseFloat(currentProduct.Precio[0]);
-            const previousPrice = (currentPrice * 1.15).toFixed(2);
-            document.getElementById('productPrice').textContent = `S/. ${previousPrice}`;
-            document.getElementById('discountPrice').textContent = `S/. ${currentPrice.toFixed(2)}`;
-            
-            document.getElementById('productDescription').textContent = currentProduct.Descripcion || 'Descripción no disponible';
-            updateSubtotal();
-
-            // Agregar productos relacionados
-            const relatedProducts = getRelatedProducts(currentProduct, 5);
-            const relatedProductsHTML = relatedProducts.map(relatedProduct => `
-                <div class="product-card bg-white p-2 rounded shadow">
-                    <div class="product-card-image-container">
-                        <img src="${relatedProduct.Photo}" alt="${relatedProduct.Nombre}" class="cursor-pointer" 
-                             onclick="openProductPage('${relatedProduct.SKU}')" 
-                             onerror="this.onerror=null; this.src='placeholder-image.jpg';">
-                    </div>
-                    <h3 class="text-sm font-semibold mb-1 cursor-pointer h-12 overflow-hidden" onclick="openProductPage('${relatedProduct.SKU}')">
-                        ${capitalizeFirstLetter(relatedProduct.Categoria)} ${relatedProduct.Nombre.toUpperCase()} ${relatedProduct.Modelo} ${relatedProduct.Tamaño}
-                    </h3>
-                    <div class="flex justify-between items-center text-sm">
-                        <p class="font-bold text-red-600">S/. ${parseFloat(relatedProduct.Precio[0]).toFixed(2)}</p>
-                        <p class="line-through text-gray-500">S/. ${(parseFloat(relatedProduct.Precio[0]) * 1.15).toFixed(2)}</p>
-                    </div>
-                    <button onclick="addToCart('${relatedProduct.SKU}')" class="mt-2 bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 w-full text-sm">Añadir</button>
-                </div>
-            `).join('');
-            document.querySelector('#relatedProducts .grid').innerHTML = relatedProductsHTML;
-        }
-    }
-}
-    
-function updateQuantity(change) {
-    quantity = Math.max(1, quantity + change);
-    document.getElementById('quantity').textContent = quantity;
-    updateSubtotal();
-}
-    
-        function updateSubtotal() {
-            const subtotal = parseFloat(currentProduct.Precio[0]) * quantity;
-            document.querySelector('.add-to-cart').textContent = `Agregar al carrito - S/. ${subtotal.toFixed(2)}`;
-        }
-    
-        function addToCart(sku) {
-            const productToAdd = sku ? allProducts.find(p => p.SKU === sku) : currentProduct;
-            if (productToAdd) {
-                const existingItem = cart.find(item => item.SKU === productToAdd.SKU);
-                if (existingItem) {
-                    existingItem.quantity += quantity;
-                } else {
-                    cart.push({ ...productToAdd, quantity: quantity });
-                }
-                saveCart();
-                updateCartDisplay();
-                showCart();
-                quantity = 1;
-                document.getElementById('quantity').textContent = quantity;
-                updateSubtotal();
-            }
-        }
-    
-        function setupEventListeners() {
-            const searchInput = document.getElementById('searchInput');
-            const searchResults = document.getElementById('searchResults');
-    
-            searchInput.addEventListener('input', function() {
-                const query = this.value.trim().toLowerCase();
-                if (query.length > 0) {
-                    const results = searchProducts(query);
-                    displaySearchResults(results);
-                } else {
-                    searchResults.classList.add('hidden');
-                }
-            });
-    
-            document.addEventListener('click', function(event) {
-                if (!searchResults.contains(event.target) && !searchInput.contains(event.target)) {
-                    searchResults.classList.add('hidden');
-                }
-            });
-        }
-    
-        document.addEventListener('DOMContentLoaded', init);
     </script>
     </body>
 </html>

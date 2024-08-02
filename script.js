@@ -5,20 +5,25 @@ const productsPerPage = 30;
 let cart = [];
 const maxPrice = 500;
 let currentFilteredProducts = [];
+let currentProduct;
+
 
 console.log('Script started');
 
 
 async function loadProducts() {
-    try {
-        const response = await fetch('productos.json');
-        allProducts = await response.json();
-        console.log("Productos cargados:", allProducts.length);
-    } catch (error) {
-        console.error('Error loading products:', error);
-        alert('Error loading products. Please check the console for more details.');
+    if (allProducts.length === 0) {
+        try {
+            const response = await fetch('productos.json');
+            allProducts = await response.json();
+            console.log("Productos cargados:", allProducts.length);
+        } catch (error) {
+            console.error('Error loading products:', error);
+            alert('Error loading products. Please check the console for more details.');
+        }
     }
 }
+
 
 
 
@@ -231,13 +236,38 @@ function getRelatedProducts(currentProduct, count = 5) {
 
 
 
+
+
+function changePage(page, event) {
+    if (event) event.preventDefault();
+    currentPage = page;
+    const products = currentFilteredProducts.length > 0 ? currentFilteredProducts : allProducts;
+    displayProducts(products);
+    window.scrollTo(0, 0);
+}
+
+function searchProducts(query) {
+    query = query.toLowerCase();
+    return allProducts.filter(product => 
+        ['SKU', 'Nombre', 'Modelo', 'Tamaño', 'Categoria'].some(key => 
+            String(product[key]).toLowerCase().includes(query)
+        )
+    );
+}
+
+
+
 function updatePagination(totalProducts) {
     const totalPages = Math.ceil(totalProducts / productsPerPage);
     const pagination = document.getElementById('pagination');
     if (pagination) {
         const range = 5;
-        let start = Math.max(1, currentPage - range);
-        let end = Math.min(totalPages, currentPage + range);
+        let start = Math.max(1, currentPage - Math.floor(range / 2));
+        let end = Math.min(totalPages, start + range - 1);
+
+        if (end - start + 1 < range) {
+            start = Math.max(1, end - range + 1);
+        }
 
         let paginationHTML = '<nav class="inline-flex rounded-md shadow">';
 
@@ -265,72 +295,163 @@ function updatePagination(totalProducts) {
     }
 }
 
-function changePage(page, event) {
-    event.preventDefault();
-    currentPage = page;
-    displayProducts(currentFilteredProducts.length > 0 ? currentFilteredProducts : allProducts);
-}
+function displaySearchResults(results, isFullPage = false) {
+    if (isFullPage) {
+        const startIndex = (currentPage - 1) * productsPerPage;
+        const endIndex = startIndex + productsPerPage;
+        const paginatedResults = results.slice(startIndex, endIndex);
 
-function searchProducts(query) {
-    query = query.toLowerCase();
-    return allProducts.filter(product => 
-        ['SKU', 'Nombre', 'Modelo', 'Tamaño', 'Categoria'].some(key => 
-            String(product[key]).toLowerCase().includes(query)
-        )
-    );
-}
-
-
-
-function displaySearchResults(results) {
-    const searchResults = document.getElementById('searchResults');
-    const searchResultsScroll = searchResults.querySelector('.search-results-scroll');
-    
-    if (results.length === 0) {
-        searchResults.classList.add('hidden');
-        return;
-    }
-
-    searchResultsScroll.innerHTML = results.map((product, index) => {
-        const currentPrice = parseFloat(product.Precio[0]);
-        const previousPrice = (currentPrice * 1.15).toFixed(2);
+        const productGrid = document.getElementById('productGrid');
+        if (productGrid) {
+            productGrid.innerHTML = paginatedResults.map(product => `
+                <div class="product-card bg-white p-2 rounded shadow">
+                    <img src="${product.Photo}" alt="${product.Nombre}" class="w-full h-32 object-cover mb-2 cursor-pointer" 
+                         onclick="openProductPage('${product.SKU}')" 
+                         onerror="handleImageError(this)">
+                    <h3 class="text-sm font-semibold mb-1 cursor-pointer h-12 overflow-hidden" onclick="openProductPage('${product.SKU}')">
+                        ${capitalizeFirstLetter(product.Categoria)} ${product.Nombre.toUpperCase()} ${product.Modelo} ${product.Tamaño}
+                    </h3>
+                    <div class="flex justify-between items-center text-sm">
+                        <p class="font-bold text-red-600">S/. ${parseFloat(product.Precio[0]).toFixed(2)}</p>
+                        <p class="line-through text-gray-500">S/. ${(parseFloat(product.Precio[0]) * 1.15).toFixed(2)}</p>
+                    </div>
+                    <button onclick="addToCart('${product.SKU}')" class="mt-2 bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 w-full text-sm">Añadir</button>
+                </div>
+            `).join('');
+        }
+        updatePagination(results.length);
+    } else {
+        const searchResults = document.getElementById('searchResults');
+        const searchResultsScroll = searchResults.querySelector('.search-results-scroll');
         
-        return `
-            <div class="search-result-item flex p-4 hover:bg-gray-100 ${index >= 2 ? 'mobile-hidden' : ''}">
-                <div class="w-1/4 cursor-pointer" onclick="openProductPage('${product.SKU}')">
-                    <img src="${product.Photo}" alt="${product.Nombre}" class="w-full h-24 object-contain">
-                </div>
-                <div class="w-3/4 pl-4 flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-base font-semibold cursor-pointer" style="font-size: 1rem;" onclick="openProductPage('${product.SKU}')">
-                            ${product.Nombre} ${product.Modelo}
-                        </h3>
-                        <p class="text-sm text-gray-600">Tamaño: ${product.Tamaño}</p>
+        if (results.length === 0) {
+            searchResults.classList.add('hidden');
+            return;
+        }
+
+        searchResultsScroll.innerHTML = results.slice(0, 5).map((product, index) => {
+            const currentPrice = parseFloat(product.Precio[0]);
+            const previousPrice = (currentPrice * 1.15).toFixed(2);
+            
+            return `
+                <div class="search-result-item flex p-4 hover:bg-gray-100 ${index >= 2 ? 'mobile-hidden' : ''}">
+                    <div class="w-1/4 cursor-pointer" onclick="openProductPage('${product.SKU}')">
+                        <img src="${product.Photo}" alt="${product.Nombre}" class="w-full h-24 object-contain">
                     </div>
-                    <div class="flex justify-between items-center">
+                    <div class="w-3/4 pl-4 flex flex-col justify-between">
                         <div>
-                            <span class="text-lg font-bold text-red-600">S/. ${currentPrice.toFixed(2)}</span>
-                            <span class="text-sm line-through text-gray-500 ml-2">S/. ${previousPrice}</span>
+                            <h3 class="text-base font-semibold cursor-pointer" style="font-size: 1rem;" onclick="openProductPage('${product.SKU}')">
+                                ${product.Nombre} ${product.Modelo}
+                            </h3>
+                            <p class="text-sm text-gray-600">Tamaño: ${product.Tamaño}</p>
                         </div>
-                        <button onclick="addToCart('${product.SKU}'); event.stopPropagation();" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Añadir</button>
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <span class="text-lg font-bold text-red-600">S/. ${currentPrice.toFixed(2)}</span>
+                                <span class="text-sm line-through text-gray-500 ml-2">S/. ${previousPrice}</span>
+                            </div>
+                            <button onclick="addToCart('${product.SKU}'); event.stopPropagation();" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Añadir</button>
+                        </div>
                     </div>
                 </div>
+            `;
+        }).join('');
+
+        // Añadir el enlace "Ver todos los resultados"
+        searchResultsScroll.innerHTML += `
+            <div class="p-4 border-t border-gray-200">
+                <a href="#" onclick="showAllResults()" class="text-blue-600 hover:text-blue-800 font-semibold">
+                    Ver todos los resultados (${results.length})
+                </a>
             </div>
         `;
-    }).join('');
 
-    searchResults.classList.remove('hidden');
+        searchResults.classList.remove('hidden');
+        searchResultsScroll.style.maxHeight = '400px';
+        searchResultsScroll.style.overflowY = 'auto';
 
-    if (window.innerWidth < 768) {
-        document.body.style.overflow = 'hidden';
-        if (results.length > 2) {
-            const thirdItem = searchResultsScroll.querySelector('.search-result-item:nth-child(3)');
-            if (thirdItem) {
-                thirdItem.style.height = '58px'; // Muestra solo la mitad del tercer ítem
+        if (window.innerWidth < 768) {
+            document.body.style.overflow = 'hidden';
+            if (results.length > 2) {
+                const thirdItem = searchResultsScroll.querySelector('.search-result-item:nth-child(3)');
+                if (thirdItem) {
+                    thirdItem.style.height = '58px'; // Muestra solo la mitad del tercer ítem
+                }
             }
         }
     }
 }
+
+
+
+function showAllResults() {
+    const searchInput = document.getElementById('searchInput');
+    const query = searchInput.value.trim();
+    if (query.length > 0) {
+        window.location.href = `search-results.html?query=${encodeURIComponent(query)}`;
+    }
+}
+
+async function initSearchResults() {
+    await loadProducts();
+    const urlParams = new URLSearchParams(window.location.search);
+    const query = urlParams.get('query');
+    
+    if (query) {
+        document.getElementById('searchQuery').textContent = query;
+        currentFilteredProducts = searchProducts(query);
+        updateFilters(currentFilteredProducts);
+        displaySearchResults(currentFilteredProducts, true);
+        updateResultCount(currentFilteredProducts.length);
+        updatePagination(currentFilteredProducts.length);
+    }
+}
+
+
+function updateFilters(results) {
+    const categories = [...new Set(results.map(product => product.Categoria))];
+    const filtersContainer = document.getElementById('filters');
+    
+    if (filtersContainer) {
+        let filtersHTML = '<h3 class="font-semibold mb-2">Categorías</h3>';
+        categories.forEach(category => {
+            filtersHTML += `
+                <label class="block mb-2">
+                    <input type="checkbox" value="${category}" class="mr-2 category-filter"> ${category}
+                </label>
+            `;
+        });
+        
+        filtersContainer.innerHTML = filtersHTML;
+        
+        // Añadir event listeners a los checkboxes
+        document.querySelectorAll('.category-filter').forEach(checkbox => {
+            checkbox.addEventListener('change', applyFilters);
+        });
+    }
+}
+
+function applyFilters() {
+    const selectedCategories = [...document.querySelectorAll('.category-filter:checked')].map(cb => cb.value);
+    const query = document.getElementById('searchQuery').textContent;
+    currentFilteredProducts = searchProducts(query);
+    
+    if (selectedCategories.length > 0) {
+        currentFilteredProducts = currentFilteredProducts.filter(product => selectedCategories.includes(product.Categoria));
+    }
+    
+    currentPage = 1;
+    displaySearchResults(currentFilteredProducts, true);
+    updateResultCount(currentFilteredProducts.length);
+}
+
+function updateResultCount(count) {
+    const resultCountElement = document.getElementById('resultCount');
+    if (resultCountElement) {
+        resultCountElement.textContent = count;
+    }
+}
+
 
 
 
@@ -350,28 +471,26 @@ function saveCart() {
 }
 
 function addToCart(sku, quantityToAdd = 1) {
-    const productToAdd = sku ? allProducts.find(p => p.SKU === sku) : currentProduct;
+    console.log(`Adding to cart. SKU: ${sku}, Quantity: ${quantityToAdd}`);
+    const productToAdd = allProducts.find(p => p.SKU === sku);
     if (productToAdd) {
+        console.log(`Product to add: ${JSON.stringify(productToAdd)}`);
         const existingItem = cart.find(item => item.SKU === productToAdd.SKU);
         if (existingItem) {
             existingItem.quantity += quantityToAdd;
+            console.log(`Updated existing item. New quantity: ${existingItem.quantity}`);
         } else {
             cart.push({ ...productToAdd, quantity: quantityToAdd });
+            console.log('Added new item to cart');
         }
         saveCart();
         updateCartDisplay();
         showCart();
-        if (typeof quantity !== 'undefined') {
-            quantity = 1;
-            if (document.getElementById('quantity')) {
-                document.getElementById('quantity').textContent = quantity;
-            }
-        }
-        if (typeof currentProduct !== 'undefined' && typeof updateSubtotal === 'function') {
-            updateSubtotal();
-        }
+    } else {
+        console.error('Product not found for adding to cart');
     }
 }
+
 
 
 
@@ -429,26 +548,39 @@ function updateCartDisplay() {
             total += currentPrice * item.quantity;
         });
         
-        cartFooter.innerHTML = `
-            <div class="border-t border-gray-200 py-4 mt-4">
-                <div class="flex justify-between items-center mb-2">
-                    <span class="text-lg">Subtotal:</span>
-                    <span class="text-lg">S/. ${subtotal.toFixed(2)}</span>
+        if (cart.length > 0) {
+            cartFooter.innerHTML = `
+                <div class="border-t border-gray-200 py-4 mt-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-lg">Subtotal:</span>
+                        <span class="text-lg">S/. ${subtotal.toFixed(2)}</span>
+                    </div>
+                    <div class="flex justify-between items-center mb-2 text-green-600">
+                        <span class="text-lg">Descuento:</span>
+                        <span class="text-lg">- S/. ${totalDiscount.toFixed(2)}</span>
+                    </div>
+                    <div class="flex justify-between items-center mb-4 font-bold">
+                        <span class="text-xl">Total:</span>
+                        <span class="text-xl">S/. ${total.toFixed(2)}</span>
+                    </div>
+                    <button onclick="proceedToCheckout()" class="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600">
+                        Solicitar Pedido 
+                    </button>
                 </div>
-                <div class="flex justify-between items-center mb-2 text-green-600">
-                    <span class="text-lg">Descuento:</span>
-                    <span class="text-lg">- S/. ${totalDiscount.toFixed(2)}</span>
+            `;
+            cartFooter.style.display = 'block';
+        } else {
+            cartFooter.innerHTML = `
+                <div class="text-center py-4">
+                    <p class="text-lg">Tu carrito está vacío</p>
                 </div>
-                <div class="flex justify-between items-center mb-4 font-bold">
-                    <span class="text-xl">Total:</span>
-                    <span class="text-xl">S/. ${total.toFixed(2)}</span>
-                </div>
-                <button onclick="proceedToCheckout()" class="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600">
-                    Solicitar Pedido 
-                </button>
-            </div>
-        `;
+            `;
+            cartFooter.style.display = 'block';
+        }
     }
+
+    // Ajustar la posición del cartFooter en dispositivos móviles
+    adjustCartFooter();
 }
 
 
@@ -550,53 +682,107 @@ function setupEventListeners() {
     const searchInput = document.getElementById('searchInput');
     const searchResults = document.getElementById('searchResults');
 
-    searchInput.addEventListener('input', function() {
-        const query = this.value.trim().toLowerCase();
-        if (query.length > 0) {
-            const results = searchProducts(query);
-            displaySearchResults(results);
-        } else {
-            closeSearchResults();
-        }
-    });
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const query = this.value.trim().toLowerCase();
+            if (query.length > 0) {
+                const results = searchProducts(query);
+                displaySearchResults(results);
+            } else {
+                closeSearchResults();
+            }
+        });
 
-    document.addEventListener('click', function(event) {
-        if (!searchResults.contains(event.target) && !searchInput.contains(event.target)) {
-            closeSearchResults();
-
-        }
-        if (!document.getElementById('locationPopup').contains(event.target) && !document.querySelector('.location-icon').contains(event.target)) {
-            closeLocationPopup();
-        }
-
-        const shoppingCart = document.getElementById('shoppingCart');
-        const cartIcon = document.getElementById('cartIcon');
-        const clickedElement = event.target;
-
-        if (shoppingCart && !shoppingCart.contains(clickedElement) && 
-            !cartIcon.contains(clickedElement) && 
-            !clickedElement.closest('button') && 
-            !clickedElement.closest('a') && 
-            !clickedElement.closest('input')) {
-            hideCart();
-        }
-    });
-
-    const locationPopup = document.getElementById('locationPopup');
-    if (locationPopup) {
-        locationPopup.addEventListener('click', function(event) {
-            event.stopPropagation();
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                showAllResults();
+            }
         });
     }
 
-    const closeCartButton = document.querySelector('#shoppingCart .close-button');
-    if (closeCartButton) {
-        closeCartButton.addEventListener('click', function(event) {
+    if (searchResults) {
+        document.addEventListener('click', function(event) {
+            if (!searchResults.contains(event.target) && !searchInput.contains(event.target)) {
+                closeSearchResults();
+            }
+        });
+    }
+
+    const locationIcon = document.querySelector('.location-icon');
+    if (locationIcon) {
+        locationIcon.addEventListener('click', openLocationPopup);
+    }
+
+    const locationPopupOverlay = document.getElementById('locationPopupOverlay');
+    if (locationPopupOverlay) {
+        locationPopupOverlay.addEventListener('click', closeLocationPopup);
+    }
+
+    const cartIcon = document.getElementById('cartIcon');
+    if (cartIcon) {
+        cartIcon.addEventListener('click', function(event) {
             event.preventDefault();
             event.stopPropagation();
-            hideCart();
+            showCart();
         });
     }
+
+    const shoppingCart = document.getElementById('shoppingCart');
+    if (shoppingCart) {
+        document.addEventListener('click', function(event) {
+            if (!shoppingCart.contains(event.target) && 
+                !cartIcon.contains(event.target) && 
+                !event.target.closest('button') && 
+                !event.target.closest('a') && 
+                !event.target.closest('input')) {
+                hideCart();
+            }
+        });
+
+        const closeCartButton = shoppingCart.querySelector('.close-button');
+        if (closeCartButton) {
+            closeCartButton.addEventListener('click', function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+                hideCart();
+            });
+        }
+    }
+
+    // Listener para los filtros en la página de resultados
+    const categoryFilters = document.querySelectorAll('.category-filter');
+    categoryFilters.forEach(filter => {
+        filter.addEventListener('change', applyFilters);
+    });
+
+    // Listener para el botón "Ver todos los resultados"
+    const viewAllResultsButton = document.querySelector('.view-all-results');
+    if (viewAllResultsButton) {
+        viewAllResultsButton.addEventListener('click', showAllResults);
+    }
+
+    // Listeners para la paginación
+    const paginationContainer = document.getElementById('pagination');
+    if (paginationContainer) {
+        paginationContainer.addEventListener('click', function(event) {
+            if (event.target.tagName === 'A') {
+                event.preventDefault();
+                const page = event.target.getAttribute('data-page');
+                if (page) {
+                    changePage(parseInt(page));
+                }
+            }
+        });
+    }
+
+    // Listener para el redimensionamiento de la ventana
+    window.addEventListener('resize', function() {
+        adjustCartFooter();
+        if (window.innerWidth >= 768) {
+            document.body.style.overflow = '';
+        }
+    });
 }
 
 function closeSearchResults() {
@@ -628,39 +814,149 @@ function getRelatedProducts(currentProduct, count = 7) {
     return result;
 }
 
+
+
+function updateSubtotal() {
+    console.log('Updating subtotal');
+    if (currentProduct) {
+        const quantityElement = document.getElementById('quantity');
+        const quantity = quantityElement ? parseInt(quantityElement.textContent, 10) : 1;
+        console.log(`Current quantity for subtotal: ${quantity}`);
+        const subtotal = parseFloat(currentProduct.Precio[0]) * quantity;
+        console.log(`Calculated subtotal: ${subtotal}`);
+        const addToCartButton = document.querySelector('.add-to-cart');
+        if (addToCartButton) {
+            addToCartButton.textContent = `Agregar al carrito - S/. ${subtotal.toFixed(2)}`;
+            console.log(`Add to cart button text updated: ${addToCartButton.textContent}`);
+        } else {
+            console.error('Add to cart button not found');
+        }
+    } else {
+        console.error('No current product defined for subtotal update');
+    }
+}
+
+// Asegúrate de que esta función se llame cuando se carga la página de producto
+
+
+
+
+function initProductPage() {
+    console.log('Initializing product page');
+    let pageQuantity = 1;
+
+    function updateQuantity(change) {
+        console.log(`Updating quantity. Current: ${pageQuantity}, Change: ${change}`);
+        pageQuantity = Math.max(1, pageQuantity + change);
+        console.log(`New quantity: ${pageQuantity}`);
+        const quantityElement = document.getElementById('quantity');
+        if (quantityElement) {
+            quantityElement.textContent = pageQuantity;
+            console.log(`Quantity element updated to: ${pageQuantity}`);
+        } else {
+            console.error('Quantity element not found');
+        }
+        updateSubtotal();
+    }
+
+    function addToCartFromProductPage(event) {
+        console.log('Adding to cart from product page');
+        event.preventDefault();
+        event.stopPropagation();
+        console.log(`Current product: ${JSON.stringify(currentProduct)}`);
+        console.log(`Page quantity: ${pageQuantity}`);
+        if (currentProduct && currentProduct.SKU) {
+            addToCart(currentProduct.SKU, pageQuantity);
+            pageQuantity = 1;
+            const quantityElement = document.getElementById('quantity');
+            if (quantityElement) {
+                quantityElement.textContent = pageQuantity;
+                console.log('Quantity reset to 1 after adding to cart');
+            } else {
+                console.error('Quantity element not found when resetting');
+            }
+            updateSubtotal();
+        } else {
+            console.error('No valid current product defined');
+        }
+    }
+
+    // Event listeners específicos de la página de producto
+    const decreaseBtn = document.querySelector('.quantity-container button:first-child');
+    const increaseBtn = document.querySelector('.quantity-container button:last-child');
+    const addToCartBtn = document.querySelector('.add-to-cart');
+
+    if (decreaseBtn && increaseBtn && addToCartBtn) {
+        // Remover event listeners existentes
+        decreaseBtn.removeEventListener('click', decreaseQuantity);
+        increaseBtn.removeEventListener('click', increaseQuantity);
+        addToCartBtn.removeEventListener('click', addToCartFromProductPage);
+
+        // Funciones de manejo de eventos
+        function decreaseQuantity() {
+            console.log('Decrease button clicked');
+            updateQuantity(-1);
+        }
+
+        function increaseQuantity() {
+            console.log('Increase button clicked');
+            updateQuantity(1);
+        }
+
+        // Agregar nuevos event listeners
+        decreaseBtn.addEventListener('click', decreaseQuantity);
+        increaseBtn.addEventListener('click', increaseQuantity);
+        addToCartBtn.addEventListener('click', addToCartFromProductPage);
+
+        console.log('Event listeners added to quantity buttons and add to cart button');
+    } else {
+        console.error('One or more buttons not found');
+    }
+
+    loadProductDetails();
+}
+
+
+
 async function init() {
     await loadProducts();
     loadCart();
-    generateSubCategories(allProducts);
-    
-    if (!window.location.pathname.includes('product.html')) {
+
+    const isProductPage = window.location.pathname.includes('product.html');
+    const isSearchResultsPage = window.location.pathname.includes('search-results.html');
+
+    if (isProductPage) {
+        initProductPage();
+    } else if (isSearchResultsPage) {
+        initSearchResults();
+    } else {
+        generateSubCategories(allProducts);
         displayProducts(allProducts);
     }
-    
+
+    adjustCartFooter();
     setupEventListeners();
     updateCartDisplay();
     initCartIcon();
     hideCart();
 
-    // Inicialización del menú móvil
-    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-    const mobileMenu = document.getElementById('mobileMenu');
-    if (mobileMenuBtn && mobileMenu) {
-        mobileMenuBtn.addEventListener('click', function() {
-            mobileMenu.classList.toggle('active');
-        });
-    }
-
     // Configuración para el header y scroll
     setupHeaderAndScroll();
 
-    // Inicialización del slider
-    initSlider();
+    // Inicialización del slider (solo en la página principal)
+    if (!isProductPage && !isSearchResultsPage) {
+        initSlider();
+    }
 
     // Animación de iconos
     setupIconAnimation('.whatsapp-icon', '#whatsappPath');
     setupIconAnimation('.location-icon', '#locationPath');
 }
+
+document.addEventListener('DOMContentLoaded', init);
+
+
+
 
 function setupHeaderAndScroll() {
     const header = document.querySelector('header');
@@ -859,4 +1155,101 @@ function proceedToCheckout() {
     window.open(whatsappLink, '_blank');
 }
 
-document.addEventListener('DOMContentLoaded', init);
+
+function hasVisibleNavigationBar() {
+    const windowHeight = window.innerHeight;
+    const documentHeight = document.documentElement.clientHeight;
+    return windowHeight < documentHeight;
+}
+
+function adjustCartFooter() {
+    const cartFooter = document.getElementById('cartFooter');
+    if (hasVisibleNavigationBar()) {
+        cartFooter.style.bottom = '60px'; // Ajustar según la altura de los controles del navegador
+    } else {
+        cartFooter.style.bottom = '0';
+    }
+}
+
+// Llamar a esta función en init() y en el evento resize
+window.addEventListener('resize', adjustCartFooter);
+
+async function loadProductDetails() {
+    console.log('Loading product details');
+    const urlParams = new URLSearchParams(window.location.search);
+    const sku = urlParams.get('sku');
+    if (sku) {
+        console.log(`SKU from URL: ${sku}`);
+        currentProduct = allProducts.find(p => p.SKU === sku);
+        if (currentProduct) {
+            console.log(`Product found: ${JSON.stringify(currentProduct)}`);
+            document.getElementById('productImage').src = currentProduct.Photo;
+            document.getElementById('productCategory').innerHTML = `<a href="index.html">inicio</a> / ${currentProduct.Categoria.toLowerCase()} / ${currentProduct.Nombre.toLowerCase()}`;
+            document.getElementById('productName').textContent = `${currentProduct.Nombre} ${currentProduct.Modelo} ${currentProduct.Tamaño}`;
+            document.getElementById('productSKU').textContent = `SKU: ${currentProduct.SKU}`;
+            
+            const currentPrice = parseFloat(currentProduct.Precio[0]);
+            const previousPrice = (currentPrice * 1.15).toFixed(2);
+            document.getElementById('productPrice').textContent = `S/. ${previousPrice}`;
+            document.getElementById('discountPrice').textContent = `S/. ${currentPrice.toFixed(2)}`;
+            
+            document.getElementById('productDescription').textContent = currentProduct.Descripcion || 'Descripción no disponible';
+            updateSubtotal();
+            loadRelatedProducts(currentProduct);
+        } else {
+            console.error(`Product not found for SKU: ${sku}`);
+        }
+    } else {
+        console.error('No SKU provided in URL');
+    }
+}
+
+
+function loadRelatedProducts(currentProduct) {
+    const relatedProducts = getRelatedProducts(currentProduct, 5);
+    const relatedProductsContainer = document.querySelector('.related-products-scroll');
+    if (relatedProductsContainer) {
+        const relatedProductsHTML = relatedProducts.map(relatedProduct => `
+            <div class="product-card bg-white p-2 rounded shadow">
+                <div class="product-card-image-container">
+                    <img src="${relatedProduct.Photo}" alt="${relatedProduct.Nombre}" class="cursor-pointer" 
+                         onclick="openProductPage('${relatedProduct.SKU}')" 
+                         onerror="handleImageError(this)">
+                </div>
+                <h3 class="text-sm font-semibold mb-1 cursor-pointer h-12 overflow-hidden" onclick="openProductPage('${relatedProduct.SKU}')">
+                    ${capitalizeFirstLetter(relatedProduct.Categoria)} ${relatedProduct.Nombre.toUpperCase()} ${relatedProduct.Modelo} ${relatedProduct.Tamaño}
+                </h3>
+                <div class="flex justify-between items-center text-sm">
+                    <p class="font-bold text-red-600">S/. ${parseFloat(relatedProduct.Precio[0]).toFixed(2)}</p>
+                    <p class="line-through text-gray-500">S/. ${(parseFloat(relatedProduct.Precio[0]) * 1.15).toFixed(2)}</p>
+                </div>
+                <button onclick="addToCart('${relatedProduct.SKU}')" class="mt-2 bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 w-full text-sm">Añadir</button>
+            </div>
+        `).join('');
+        relatedProductsContainer.innerHTML = relatedProductsHTML;
+
+        addScrollIndicator();
+    } else {
+        console.error('No se encontró el contenedor de productos relacionados');
+    }
+}
+
+function addScrollIndicator() {
+    if (window.innerWidth < 768) {
+        const container = document.querySelector('.related-products-container');
+        let indicator = document.querySelector('.scroll-indicator');
+        if (!indicator) {
+            indicator = document.createElement('div');
+            indicator.className = 'scroll-indicator';
+            indicator.innerHTML = '<span></span><span></span><span></span>';
+            container.appendChild(indicator);
+        }
+
+        container.addEventListener('scroll', () => {
+            const maxScroll = container.scrollWidth - container.clientWidth;
+            const currentScroll = container.scrollLeft;
+            const scrollPercentage = (currentScroll / maxScroll) * 100;
+            indicator.style.setProperty('--scroll', `${scrollPercentage}%`);
+        });
+    }
+}
